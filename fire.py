@@ -6,7 +6,7 @@ import string
 import datetime
 
 # Use a service account
-cred = credentials.Certificate('/Users/reneehsu/Desktop/LAhack/serviceaccount.json')
+cred = credentials.Certificate('/Users/mertdusunceli/Desktop/serviceaccount.json')
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -133,18 +133,22 @@ def mymessage(call, phoneNumber):
 	if (len(newcall) == 2 and (newcall[1] == "G1" or newcall[1] == "G2" or newcall[1] == "G3") and newcall[0] == "STOP"):
 		doc_ref = db.collection(u'grocery').document(phoneNumber)
 		code = newcall[1]
+		printer = "STOP message recorded for " + code + ": "
 		if(code == "G1"):
+			printer += docs.to_dict()[u'messageList'][u'message1'][u'body']
 			doc_ref.update({
 				u'messageList.message1.body': u''})
 		elif(code == "G2"):
+			printer += docs.to_dict()[u'messageList'][u'message2'][u'body']
 			doc_ref.update({
 				u'messageList.message2.body': u'',})		
 		elif(code == "G3"):
+			printer += docs.to_dict()[u'messageList'][u'message3'][u'body']
 			doc_ref.update({
 				u'messageList.message3.body': u'',})
 		else:
 			return("Error 4 : no message at that location")
-		return "STOP message recorded for " + code
+		return printer
 
 	elif (newcall[0] == "G1" or newcall[0] == "G2" or newcall[0] == "G3"):
 		doc_ref = db.collection(u'grocery').document(phoneNumber)
@@ -176,27 +180,31 @@ def mymessage(call, phoneNumber):
 		doc_ref = db.collection(u'restaurant').document(phoneNumber)
 		if (len(newcall) == 2):
 			#remove from database
+			printer = "STOP message recorded for " + str(int(newcall[1])) + ": "
 			if (newcall[0] != "STOP"):
 				return "STOP is invalid"
 			code = int(newcall[1])
 			if(newcall[1] == '1'):
+				printer += docs.to_dict()[u'messageList'][u'message1'][u'body']
 				doc_ref.update({
 					u'messageList.message1.body': u'',
 					u'messageList.message1.startTime': u'',
 					u'messageList.message1.endTime': u''})
 			elif(newcall[1] == '2'):
+				printer += docs.to_dict()[u'messageList'][u'message2'][u'body']
 				doc_ref.update({
 					u'messageList.message2.body': u'',
 					u'messageList.message2.startTime': u'',
 					u'messageList.message2.endTime': u''})
 			elif(newcall[1] == '3'):
+				printer += docs.to_dict()[u'messageList'][u'message3'][u'body']
 				doc_ref.update({
 					u'messageList.message3.body': u'',
 					u'messageList.message3.startTime': u'',
 					u'messageList.message3.endTime': u''})
 			else:
 				return("Error 4 : no message at that location")
-			return "STOP message recorded for " + str(code)				#delete from database
+			return printer			#delete from database
 		else:															#here message is greater/equal to 4
 			iter = len(newcall)
 			messagequote0 = call.split('\"')
